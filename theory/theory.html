@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="theorystyles.css">
+</head>
+<body>
+
+<h1>Music Theory</h1>
+	<p>Select a key:
+	<br>
+  		<select id="chooseKey">
+    		<option value="c">c</option>
+    		<option value="c#">c#</option>
+    		<option value="d">d</option>
+   			<option value="d#">d#</option>
+   			<option value="e">e</option>
+   			<option value="f">f</option>
+   			<option value="f#">f#</option>
+   			<option value="g">g</option>
+   			<option value="g#">g#</option>
+   			<option value="a">a</option>
+   			<option value="a#">a#</option>
+   			<option value="b">b</option>
+		</select>
+		<select id="majmin">
+			<option value="major">major</option>
+			<option value="minor">minor</option>
+		</select>
+  		<input type="button" onclick="display()" value="OK" >	
+  		<hr>
+	</p>	
+
+	<p1 id='output'></p1>
+
+<script>
+var notes = ["c", "c#", "d", "d#", "e", "f", "f#", "g", "g#", "a", "a#", "b"];
+var totalNotes = 12;
+
+function halfStep(note){
+	for (var i = 0; i < totalNotes; i++) {
+		if (notes[i].localeCompare(note) == 0) {
+			var rightnote = (i+1) % 12;
+			return notes[rightnote];
+		}
+	}
+}
+
+function wholeStep(note){
+	for (var i = 0; i < totalNotes; i++) {
+		if (notes[i].localeCompare(note) == 0) {
+			var rightnote = (i+2) % 12;
+			return notes[rightnote];
+		}
+	}
+}
+
+function majorKey(note){
+	var root = note;
+	var second = wholeStep(root);
+	var third = wholeStep(second);
+	var fourth = halfStep(third);
+	var fifth = wholeStep(fourth);
+	var sixth = wholeStep(fifth);
+	var seventh = wholeStep(sixth);
+	var octave = halfStep(seventh);
+	var key = [root, second, third, fourth, fifth, sixth, seventh, octave];
+
+	return key;
+}
+
+function minorKey(note){
+	var root = note;
+	var second = wholeStep(root);
+	var third = halfStep(second);
+	var fourth = wholeStep(third);
+	var fifth = wholeStep(fourth);
+	var sixth = halfStep(fifth);
+	var seventh = wholeStep(sixth);
+	var octave = wholeStep(seventh);
+	var key = [root, second, third, fourth, fifth, sixth, seventh, octave];
+
+	return key;
+}
+
+function bluesScale(note){
+	var root = note;
+	var second = wholeStep(halfStep(root));
+	var third = wholeStep(second);
+	var fourth = halfStep(third);
+	var fifth = halfStep(fourth);
+	var sixth = wholeStep(halfStep(fifth));
+	var seventh = root;
+
+	var scale = [root, second, third, fourth, fifth, sixth, seventh];
+	return scale;
+}
+
+function majorTriad(note){
+	var key = majorKey(note);
+	var root = key[0];
+	var third = key[2];
+	var fifth = key[4];
+
+	var chord = [root, third, fifth];
+	return chord;
+}
+
+function minorTriad(note){
+	var key = minorKey(note);
+	var root = key[0];
+	var third = key[2];
+	var fifth = key[4];
+
+	var chord = [root, third, fifth];
+	return chord;
+}
+
+function chordInKey(key, chord, majmin){
+	var maj = "major";
+	var min = "minor";
+	var thisKey;
+	var positionInKey;
+	var chord;
+
+	if(majmin.localeCompare(maj) == 0){
+		thisKey = majorKey(key);
+	}
+
+	else if(majmin.localeCompare(min) == 0){
+		thisKey = minorKey(key);
+	}
+
+	for(var i = 0; i < totalNotes; i++){
+		if(thisKey[i] == chord){
+			positionInKey = i;
+		}
+	}
+
+	var root = thisKey[positionInKey];
+	var third = thisKey[((positionInKey + 2) % 7)];
+	var fifth = thisKey[((positionInKey + 4) % 7)];
+
+	var chord = [root,third,fifth];
+	return chord;
+}
+
+function fourFiveOne(key, majmin){
+
+	var maj = "major";
+	var min = "minor";
+	
+	if(majmin.localeCompare(maj) == 0){
+		thisKey = majorKey(key);
+	}
+
+	else if(majmin.localeCompare(min) == 0){
+		thisKey = minorKey(key);
+	}
+
+	var four = thisKey[3];
+	var five = thisKey[4];
+	var one = thisKey[0];
+
+	var fourChord = chordInKey(key, four, majmin);
+	var fiveChord = chordInKey(key, five, majmin);
+	var oneChord = chordInKey(key, one, majmin);
+
+	var chords = [fourChord, fiveChord, oneChord];
+	return chords;
+}
+
+function fiveSixOne(key, majmin){
+
+	var maj = "major";
+	var min = "minor";
+	
+	if(majmin.localeCompare(maj) == 0){
+		thisKey = majorKey(key);
+	}
+
+	else if(majmin.localeCompare(min) == 0){
+		thisKey = minorKey(key);
+	}
+
+	var five = thisKey[4];
+	var six = thisKey[5];
+	var one = thisKey[0];
+
+	var fiveChord = chordInKey(key, five, majmin);
+	var sixChord = chordInKey(key, six, majmin);
+	var oneChord = chordInKey(key, one, majmin);
+
+	var chords = [fiveChord, sixChord, oneChord];
+	return chords;
+}
+
+function display(){
+	var input = document.getElementById("chooseKey");
+	var key = input.options[input.selectedIndex].value;
+	var mmk = document.getElementById("majmin");
+	var mjmn = majmin.options[majmin.selectedIndex].value;
+	var maj = "major";
+	var min = "minor";
+	var keyNaming = key.replace("#", "sharp");
+
+
+	if(mjmn.localeCompare(maj) == 0){
+		document.getElementById('output').innerHTML = "Natural scale: <br>" + majorKey(key) + "<br><br>";
+		document.getElementById('output').innerHTML += "<img src ='" + keyNaming + "major.png'><br>";
+		document.getElementById('output').innerHTML += "Blues scale: <br>" + bluesScale(key) + "<br><br>";
+		document.getElementById('output').innerHTML += "Four five one: <br>" + fourFiveOne(key, mjmn)[0] + "<br>" + fourFiveOne(key, mjmn)[1] + "<br>" + fourFiveOne(key, mjmn)[2] + "<br><br>";
+		document.getElementById('output').innerHTML += "Five six one: <br>" + fiveSixOne(key, mjmn)[0] + "<br>" + fiveSixOne(key, mjmn)[1] + "<br>" + fiveSixOne(key, mjmn)[2] + "<br><br>";
+	}
+
+	if(mjmn.localeCompare(min) == 0){
+		document.getElementById('output').innerHTML = "Natural scale: <br>" + minorKey(key) + "<br><br>";
+		document.getElementById('output').innerHTML += "<img src ='" + keyNaming + "minor.png'><br>";
+		document.getElementById('output').innerHTML += "Blues scale: <br>" + bluesScale(key) + "<br><br>";
+		document.getElementById('output').innerHTML += "Four five one: <br>" + fourFiveOne(key, mjmn)[0] + "<br>" + fourFiveOne(key, mjmn)[1] + "<br>" + fourFiveOne(key, mjmn)[2] + "<br><br>";
+		document.getElementById('output').innerHTML += "Five six one: <br>" + fiveSixOne(key, mjmn)[0] + "<br>" + fiveSixOne(key, mjmn)[1] + "<br>" + fiveSixOne(key, mjmn)[2] + "<br><br>";
+	}
+	
+}
+</script>
+
+</body>
+</html>
